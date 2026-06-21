@@ -1,28 +1,87 @@
 import Subject from "@/components/Subject";
 import "@/global.css";
-import { FlatList, Pressable, Text, View } from "react-native";
-
+import clsx from "clsx";
+import { useState } from "react";
+import { FlatList, Pressable, Text, View, Modal, TextInput } from "react-native";
+import { subject } from "@/constants/subjectData";
 export default function App() {
+  const [subjects, setSubjects] = useState(subject);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newSubjectName, setNewSubjectName] = useState("");
+  const toggleExpand = (id: string) => {
+    // If it's already open, close it. Otherwise, open the new one.
+    setExpandedId(expandedId === id ? null : id);
+  };
   return (
     <>
       <View className="flex-1 bg-amber-700 pt-6">
-        
-          <Pressable className="bg-amber-400 rounded-2xl p-3 m-8">
-            <Text className="text-3xl self-center-safe">Create</Text>
-          </Pressable>
-        
-        <View className="flex flex-wrap flex-row m-3">
-          <Subject name="maths-1" />
-          <Subject name="maths-2" />
-          <Subject name="maths-3" />
-          <Subject name="maths-4" />
-          <Subject name="maths-5" />
-          <Subject name="maths-3" />
-          <Subject name="maths-3" />
-          <Subject name="maths-3" />
-          <Subject name="maths-3" />
-        </View>
+        <Pressable
+          onPress={() => setIsModalVisible(true)}
+          className="bg-amber-400 rounded-2xl p-3 m-8"
+        >
+          <Text className="text-3xl self-center-safe">Create</Text>
+        </Pressable>
+
+        <FlatList
+          data={subjects}
+          keyExtractor={(item) => item.id}
+          numColumns={1}
+          renderItem={({ item }) => {
+            const isExpanded = expandedId === item.id;
+            return (
+              <Pressable
+                onPress={() => toggleExpand(item.id)}
+                className={clsx(
+                  "mx-5 my-2",
+                  isExpanded ? "expanded-view" : "subject-box",
+                )}
+              >
+                <Subject name={item.name} isExpanded={isExpanded} />
+              </Pressable>
+            );
+          }}
+        />
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="modal-view">
+            <Text className="text-2xl font-bold mb-4">Add New Subject</Text>
+            <TextInput
+              value={newSubjectName}
+              onChangeText={(text) => setNewSubjectName(text)}
+              placeholder="Enter subject name..."
+              className="bg-gray-100 p-4 rounded-xl"
+            >
+
+            </TextInput>
+            <View className="flex-1 flex-row justify-between mt-5">
+              <Pressable onPress={() => {setNewSubjectName("")
+                ,setIsModalVisible(false)}}>
+                <Text>Cancel</Text>
+              </Pressable>
+              <Pressable onPress={() => {
+                if(newSubjectName.trim() === "")return;
+
+                const newSubject = {
+                  id : Date.now().toString(),
+                  name : newSubjectName
+                }
+
+                setSubjects([...subjects,newSubject]);
+                setNewSubjectName("");
+                setIsModalVisible(false);
+              }}>
+                <Text>Add</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

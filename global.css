@@ -7,6 +7,14 @@
 
 @layer components{
     .subject-box{
-        @apply min-w-40 min-h-40 bg-white m-3 p-3 rounded-3xl shadow-2xl
+        @apply min-h-30 bg-white 
+        m-3 p-3 rounded-3xl justify-center items-center 
+    }
+    .expanded-view{
+        @apply min-h-70 bg-white m-3 p-3 rounded-3xl shadow-2xl 
+        justify-center items-center 
+    }
+    .modal-view{
+        @apply bg-gray-500 rounded-tl-3xl rounded-tr-3xl p-6 min-h-[250px]
     }
 }
