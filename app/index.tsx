@@ -1,18 +1,70 @@
 import Subject from "@/components/Subject";
 import "@/global.css";
 import clsx from "clsx";
-import { useState } from "react";
-import { FlatList, Pressable, Text, View, Modal, TextInput } from "react-native";
-import { subject } from "@/constants/subjectData";
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  Text,
+  View,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SubjectList } from "@/constants/subjectData";
+
+const STORAGE_KEY = "@my_tracked_subjects";
 export default function App() {
-  const [subjects, setSubjects] = useState(subject);
+  const [subjects, setSubjects] = useState<SubjectList>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState("");
+  const saveSubjectsToStorage = async (currentSubjects: SubjectList) => {
+    const stringData = JSON.stringify(currentSubjects);
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, stringData);
+    } catch (e) {
+      console.log("error saving subjects : ", e);
+    }
+  };
+
+  const updateAttendance = (id: string, type: "present" | "absent") => {
+    const updated = subjects.map((sub) => {
+      if (sub.id === id) {
+        return {
+          ...sub,
+          [type]: sub[type] + 1,
+        };
+      }
+      return sub;
+    });
+    setSubjects(updated);
+    saveSubjectsToStorage(updated);
+  };
+
+
   const toggleExpand = (id: string) => {
     // If it's already open, close it. Otherwise, open the new one.
     setExpandedId(expandedId === id ? null : id);
   };
+  useEffect(() => {
+    const loadSubjectsFromStorage = async () => {
+      try {
+        const savedString = await AsyncStorage.getItem(STORAGE_KEY);
+
+        if (savedString != null) {
+          const parsedArray = JSON.parse(savedString);
+          setSubjects(parsedArray);
+        }
+      } catch (e) {
+        console.log("error loading subjects", e);
+      }
+    };
+    loadSubjectsFromStorage();
+  }, []);
   return (
     <>
       <View className="flex-1 bg-amber-700 pt-6">
@@ -37,49 +89,64 @@ export default function App() {
                   isExpanded ? "expanded-view" : "subject-box",
                 )}
               >
-                <Subject name={item.name} isExpanded={isExpanded} />
+                <Subject
+                  name={item.name}
+                  isExpanded={isExpanded}
+                  present={item.present}
+                  absent={item.absent}
+                  onPressPresent={() => updateAttendance(item.id, "present")}
+                  onPressAbsent={() => updateAttendance(item.id, "absent")}
+                />
               </Pressable>
             );
           }}
         />
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-      >
+      <Modal animationType="slide" transparent={true} visible={isModalVisible}>
         <View className="flex-1 bg-black/50 justify-end">
-          <View className="modal-view">
-            <Text className="text-2xl font-bold mb-4">Add New Subject</Text>
-            <TextInput
-              value={newSubjectName}
-              onChangeText={(text) => setNewSubjectName(text)}
-              placeholder="Enter subject name..."
-              className="bg-gray-100 p-4 rounded-xl"
-            >
+          <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}>
+            <View className="modal-view">
+              <Text className="text-2xl font-bold mb-4">Add New Subject</Text>
+              <TextInput
+                value={newSubjectName}
+                onChangeText={(text) => setNewSubjectName(text)}
+                placeholder="Enter subject name..."
+                className="bg-gray-100 p-4 rounded-xl"
+              ></TextInput>
+              <View className="flex-row justify-between mt-5">
+                <Pressable
+                  onPress={() => {
+                    (setNewSubjectName(""), setIsModalVisible(false));
+                  }}
+                >
+                  <Text>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    if (newSubjectName.trim() === "") return;
 
-            </TextInput>
-            <View className="flex-1 flex-row justify-between mt-5">
-              <Pressable onPress={() => {setNewSubjectName("")
-                ,setIsModalVisible(false)}}>
-                <Text>Cancel</Text>
-              </Pressable>
-              <Pressable onPress={() => {
-                if(newSubjectName.trim() === "")return;
+                    const newSubject = {
+                      id: Date.now().toString(),
+                      name: newSubjectName,
+                      present: 0,
+                      absent: 0
+                    };
 
-                const newSubject = {
-                  id : Date.now().toString(),
-                  name : newSubjectName
-                }
+                    const updatedSubjects = [...subjects, newSubject];
 
-                setSubjects([...subjects,newSubject]);
-                setNewSubjectName("");
-                setIsModalVisible(false);
-              }}>
-                <Text>Add</Text>
-              </Pressable>
+                    setSubjects(updatedSubjects);
+                    saveSubjectsToStorage(updatedSubjects);
+
+                    setNewSubjectName("");
+                    setIsModalVisible(false);
+                  }}
+                >
+                  <Text>Add</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </>
