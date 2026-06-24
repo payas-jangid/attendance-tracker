@@ -1,5 +1,33 @@
 import "@/global.css";
-import { Stack } from "expo-router";
+import { Tabs } from "expo-router";
+import { SubjectProvider } from "@/context/SubjectContext";
+import { Background } from "@react-navigation/elements";
+import { Colors } from "@/constants/theme";
 export default function RootLayout() {
-  return <Stack screenOptions={{headerShown : false }}/>;
+  return (
+    <SubjectProvider>
+      <Tabs
+        screenOptions={{
+          headerShown:false,
+          tabBarActiveTintColor:"#f59e0b",
+          tabBarStyle:{
+            backgroundColor:"black",
+            height:60,
+            paddingBottom:8,
+            borderRadius:10,
+            marginRight:40,
+            marginLeft:40,
+            marginBottom:30,
+            position:"absolute"
+          }
+        }}
+      >
+        <Tabs.Screen 
+        name="index" 
+        options={{title:"attendance"
+        }}/>
+        <Tabs.Screen name="TestScores" options={{title:"Scores"}}/>
+      </Tabs>
+    </SubjectProvider>
+  )
 }

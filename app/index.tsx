@@ -10,61 +10,24 @@ import {
   Modal,
   TextInput,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SubjectList } from "@/constants/subjectData";
-
+import { useSubjects } from "@/context/SubjectContext";
 const STORAGE_KEY = "@my_tracked_subjects";
 export default function App() {
-  const [subjects, setSubjects] = useState<SubjectList>([]);
+  const {subjects, addSubject, updateAttendance} = useSubjects();
+
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState("");
-  const saveSubjectsToStorage = async (currentSubjects: SubjectList) => {
-    const stringData = JSON.stringify(currentSubjects);
-
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, stringData);
-    } catch (e) {
-      console.log("error saving subjects : ", e);
-    }
-  };
-
-  const updateAttendance = (id: string, type: "present" | "absent") => {
-    const updated = subjects.map((sub) => {
-      if (sub.id === id) {
-        return {
-          ...sub,
-          [type]: sub[type] + 1,
-        };
-      }
-      return sub;
-    });
-    setSubjects(updated);
-    saveSubjectsToStorage(updated);
-  };
-
 
   const toggleExpand = (id: string) => {
     // If it's already open, close it. Otherwise, open the new one.
     setExpandedId(expandedId === id ? null : id);
   };
-  useEffect(() => {
-    const loadSubjectsFromStorage = async () => {
-      try {
-        const savedString = await AsyncStorage.getItem(STORAGE_KEY);
-
-        if (savedString != null) {
-          const parsedArray = JSON.parse(savedString);
-          setSubjects(parsedArray);
-        }
-      } catch (e) {
-        console.log("error loading subjects", e);
-      }
-    };
-    loadSubjectsFromStorage();
-  }, []);
+  
   return (
     <>
       <View className="flex-1 bg-amber-700 pt-6">
@@ -74,11 +37,11 @@ export default function App() {
         >
           <Text className="text-3xl self-center-safe">Create</Text>
         </Pressable>
-
         <FlatList
           data={subjects}
           keyExtractor={(item) => item.id}
           numColumns={1}
+          contentContainerClassName="pb-32"
           renderItem={({ item }) => {
             const isExpanded = expandedId === item.id;
             return (
@@ -126,18 +89,7 @@ export default function App() {
                   onPress={() => {
                     if (newSubjectName.trim() === "") return;
 
-                    const newSubject = {
-                      id: Date.now().toString(),
-                      name: newSubjectName,
-                      present: 0,
-                      absent: 0
-                    };
-
-                    const updatedSubjects = [...subjects, newSubject];
-
-                    setSubjects(updatedSubjects);
-                    saveSubjectsToStorage(updatedSubjects);
-
+                    addSubject(newSubjectName.trim());
                     setNewSubjectName("");
                     setIsModalVisible(false);
                   }}
@@ -149,6 +101,7 @@ export default function App() {
           </KeyboardAvoidingView>
         </View>
       </Modal>
+      
     </>
   );
 }
