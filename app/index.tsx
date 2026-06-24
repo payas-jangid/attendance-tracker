@@ -35,7 +35,7 @@ export default function App() {
           onPress={() => setIsModalVisible(true)}
           className="bg-amber-400 rounded-2xl p-3 m-8"
         >
-          <Text className="text-3xl self-center-safe">Create</Text>
+          <Text className="text-3xl self-center-safe font-sans-bold">Create</Text>
         </Pressable>
         <FlatList
           data={subjects}

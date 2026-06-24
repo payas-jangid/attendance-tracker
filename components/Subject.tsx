@@ -19,7 +19,7 @@ const Subject = ({ name, isExpanded,present,absent,onPressPresent,onPressAbsent,
   return (
     <View className="p-4 bg-amber-50 rounded-xl shadow-sm w-full">
       <View className="flex-row justify-between items-center">
-        <Text className="text-xl font-bold text-amber-900">{name}</Text>
+        <Text className="text-xl text-amber-900 font-sans-bold">{name}</Text>
         <View
           className={clsx(
             "px-3 py-1 rounded-full",
@@ -44,15 +44,15 @@ const Subject = ({ name, isExpanded,present,absent,onPressPresent,onPressAbsent,
           </View>
 
           <View className="flex-row justify-between m-4">
-            <Pressable onPress={onPressPresent} className="present">
-              <Text>Present +1</Text>
+            <Pressable onPress={onPressPresent}>
+              <Text className="present">Present +1</Text>
             </Pressable>
-            <Pressable onPress={onPressAbsent} className="absent">
-              <Text>Absent +1</Text>
+            <Pressable onPress={onPressAbsent}>
+              <Text className="absent">Absent +1</Text>
             </Pressable>
           </View>
           <Pressable className="absent items-center" onPress={onPressDelete}>
-            <Text>Delete Subject</Text>
+            <Text className="font-sans-extrabold">Delete Subject</Text>
           </Pressable>
         </View>
       )}

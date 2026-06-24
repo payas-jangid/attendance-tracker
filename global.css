@@ -4,23 +4,35 @@
 
 @import "nativewind/theme";
 
+@theme {
 
-@layer components{
-    .subject-box{
-        @apply min-h-30 bg-white 
-        m-3 p-3 rounded-3xl justify-center items-center 
+    --font-sans: sans-regular;
+    --font-sans-light: sans-light;
+    --font-sans-medium: sans-medium;
+    --font-sans-semibold: sans-semibold;
+    --font-sans-bold: sans-bold;
+    --font-sans-extrabold: sans-extrabold;
+}
+
+
+@layer components {
+    .subject-box {
+        @apply min-h-30 bg-white m-3 p-3 rounded-3xl justify-center items-center
     }
-    .expanded-view{
-        @apply min-h-70 bg-white m-3 p-3 rounded-3xl shadow-2xl 
-        justify-center items-center 
+
+    .expanded-view {
+        @apply min-h-70 bg-white m-3 p-3 rounded-3xl shadow-2xl justify-center items-center
     }
-    .modal-view{
+
+    .modal-view {
         @apply bg-gray-500 rounded-tl-3xl rounded-tr-3xl p-6 min-h-[250px]
     }
-    .absent{
-        @apply bg-red-400 rounded-2xl p-3
+
+    .absent {
+        @apply bg-red-400 rounded-2xl p-3 font-sans-medium
     }
-    .present{
-        @apply bg-green-400 rounded-2xl p-3
+
+    .present {
+        @apply bg-green-400 rounded-2xl p-3 font-sans-medium
     }
 }
