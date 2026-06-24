@@ -13,6 +13,7 @@ type SubjectContextType = {
     examType: "quiz1" | "quiz2" | "mid_sem" | "end_sem",
     value: string,
   ) => void;
+  deleteSubject: (id: string) => void;
 };
 
 const SubjectContext = createContext<SubjectContextType | undefined>(undefined);
@@ -58,6 +59,13 @@ export function SubjectProvider({ children }: { children: React.ReactNode }) {
     saveSubjectsToStorage(updated);
   };
 
+
+  const deleteSubject = (id : string) => {
+    const updated = subjects.filter((sub) => sub.id !== id)
+
+    setSubjects(updated);
+    saveSubjectsToStorage(updated);
+  }
   // Action: Increment Attendance counters
   const updateAttendance = (id: string, type: "present" | "absent") => {
     const updated = subjects.map((sub) => {
@@ -94,7 +102,7 @@ export function SubjectProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SubjectContext.Provider
-      value={{ subjects, addSubject, updateAttendance, updateScore }}
+      value={{ subjects, addSubject, updateAttendance, updateScore, deleteSubject }}
     >
       {children}
     </SubjectContext.Provider>

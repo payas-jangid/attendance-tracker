@@ -10,8 +10,9 @@ type SubjectProps = {
   absent: number;
   onPressPresent: () => void;
   onPressAbsent: () => void;
+  onPressDelete: () => void;
 };
-const Subject = ({ name, isExpanded,present,absent,onPressPresent,onPressAbsent }: SubjectProps) => {
+const Subject = ({ name, isExpanded,present,absent,onPressPresent,onPressAbsent,onPressDelete }: SubjectProps) => {
   const totalClasses = present + absent;
   const attendancePercentage = totalClasses === 0 ? 100 : Math.round((present/totalClasses) * 100);
   const isDangerZone = attendancePercentage < 75;
@@ -50,6 +51,9 @@ const Subject = ({ name, isExpanded,present,absent,onPressPresent,onPressAbsent 
               <Text>Absent +1</Text>
             </Pressable>
           </View>
+          <Pressable className="absent items-center" onPress={onPressDelete}>
+            <Text>Delete Subject</Text>
+          </Pressable>
         </View>
       )}
     </View>

@@ -17,7 +17,7 @@ import { SubjectList } from "@/constants/subjectData";
 import { useSubjects } from "@/context/SubjectContext";
 const STORAGE_KEY = "@my_tracked_subjects";
 export default function App() {
-  const {subjects, addSubject, updateAttendance} = useSubjects();
+  const {subjects, addSubject, updateAttendance, deleteSubject} = useSubjects();
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -59,6 +59,7 @@ export default function App() {
                   absent={item.absent}
                   onPressPresent={() => updateAttendance(item.id, "present")}
                   onPressAbsent={() => updateAttendance(item.id, "absent")}
+                  onPressDelete={() => deleteSubject(item.id)}
                 />
               </Pressable>
             );

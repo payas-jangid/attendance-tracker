@@ -1,8 +1,6 @@
 import "@/global.css";
 import { Tabs } from "expo-router";
 import { SubjectProvider } from "@/context/SubjectContext";
-import { Background } from "@react-navigation/elements";
-import { Colors } from "@/constants/theme";
 export default function RootLayout() {
   return (
     <SubjectProvider>
